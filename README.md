@@ -122,3 +122,9 @@ in the online documentation for an overview on how to configure Spark.
 
 Please review the [Contribution to Spark guide](https://spark.apache.org/contributing.html)
 for information on how to get started contributing to the project.
+
+## Dev
+
+`./bin/spark-submit --class org.apache.spark.examples.SparkSum --master local[16] examples/target/scala-2.12/jars/spark-examples_2.12-3.4.0-SNAPSHOT.jar 5 10 16 16 > logs`
+
+``
