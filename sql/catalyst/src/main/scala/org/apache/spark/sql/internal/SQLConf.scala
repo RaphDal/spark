@@ -1927,7 +1927,8 @@ object SQLConf {
   val STATE_STORE_SKIP_NULLS_FOR_STREAM_STREAM_JOINS =
   buildConf("spark.sql.streaming.stateStore.skipNullsForStreamStreamJoins.enabled")
     .internal()
-    .doc("When true, this config will skip null values in hash based stream-stream joins.")
+    .doc("When true, this config will skip null values in hash based stream-stream joins. " +
+      "The number of skipped null values will be shown as custom metric of stream join operator.")
     .version("3.3.0")
     .booleanConf
     .createWithDefault(false)
@@ -2577,8 +2578,9 @@ object SQLConf {
   val PYSPARK_JVM_STACKTRACE_ENABLED =
     buildConf("spark.sql.pyspark.jvmStacktrace.enabled")
       .doc("When true, it shows the JVM stacktrace in the user-facing PySpark exception " +
-        "together with Python stacktrace. By default, it is disabled and hides JVM stacktrace " +
-        "and shows a Python-friendly exception only.")
+        "together with Python stacktrace. By default, it is disabled to hide JVM stacktrace " +
+        "and shows a Python-friendly exception only. Note that this is independent from log " +
+        "level settings.")
       .version("3.0.0")
       .booleanConf
       // show full stacktrace in tests but hide in production by default.
@@ -3756,6 +3758,15 @@ object SQLConf {
     .booleanConf
     .createWithDefault(false)
 
+  val LEGACY_INFER_ARRAY_TYPE_FROM_FIRST_ELEMENT =
+    buildConf("spark.sql.pyspark.legacy.inferArrayTypeFromFirstElement.enabled")
+      .doc("PySpark's SparkSession.createDataFrame infers the element type of an array from all " +
+        "values in the array by default. If this config is set to true, it restores the legacy " +
+        "behavior of only inferring the type from the first array element.")
+      .version("3.4.0")
+      .booleanConf
+      .createWithDefault(false)
+
   val LEGACY_USE_V1_COMMAND =
     buildConf("spark.sql.legacy.useV1Command")
       .internal()
@@ -4551,6 +4562,9 @@ class SQLConf extends Serializable with Logging {
   def maxConcurrentOutputFileWriters: Int = getConf(SQLConf.MAX_CONCURRENT_OUTPUT_FILE_WRITERS)
 
   def inferDictAsStruct: Boolean = getConf(SQLConf.INFER_NESTED_DICT_AS_STRUCT)
+
+  def legacyInferArrayTypeFromFirstElement: Boolean = getConf(
+    SQLConf.LEGACY_INFER_ARRAY_TYPE_FROM_FIRST_ELEMENT)
 
   def parquetFieldIdReadEnabled: Boolean = getConf(SQLConf.PARQUET_FIELD_ID_READ_ENABLED)
 
